@@ -10,6 +10,7 @@ import { Overlay, Tooltip } from "react-bootstrap"
 import * as _ from "lodash"
 import Path from "../util/Path"
 
+
 const mapEditors = {
 	text: TextEditor,
 	int: IntegerEditor,
