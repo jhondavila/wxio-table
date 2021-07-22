@@ -43,6 +43,10 @@ class Table extends React.Component {
 		let tableColums = [];
 		let cols = this.props.columns ? this.props.columns : this.props.children;
 		cols = cols || [];
+
+
+		cols = cols.filter(i => i.hidden !== true);
+
 		if (this.props.selectionMode == "multiple") {
 			//console.log("Hola");
 			newWidth = newWidth + 100;
