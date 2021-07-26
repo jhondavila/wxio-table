@@ -466,10 +466,12 @@ class Table extends React.Component {
 				// let columns = 
 				for (let x = 0; x < this.state.tblColumns.length; x++) {
 					let i = this.state.tblColumns[x];
-					let val = Path.getValue(i.dataIndex, validation);
-					if (val) {
-						include = true;
-						break;
+					if (i.dataIndex) {
+						let val = Path.getValue(i.dataIndex, validation);
+						if (val) {
+							include = true;
+							break;
+						}
 					}
 				}
 
