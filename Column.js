@@ -39,16 +39,25 @@ export class Column extends React.Component {
 
 		if (!hidden) {
 			if (render) {
-
-				return (
-					<div
-						onDoubleClick={onDoubleClick}
-						className={`col ${errors && "cell-error"} col-mytable mx-0 px-0`} style={{ width: `${width}px` }}>
-						<div className={"inner-cell p-3 p-sm-3 p-md-3 p-lg-2"}>
-							{render({ value, dataIndex, col, table, record, rowIndex, colIndex })}
+				if (col.editor && editing && editing.mode == "cell" && editing.dataIndex == dataIndex) {
+					return (
+						<div className="col col-mytable mx-0 px-0" style={{ width: `${width}px` }} onDoubleClick={onDoubleClick}>
+							{
+								col.editor({ value, dataIndex, col, table, record, rowIndex, colIndex, editing, onConfirm, onCancelEdit })
+							}
 						</div>
-					</div>
-				);
+					)
+				} else {
+					return (
+						<div
+							onDoubleClick={onDoubleClick}
+							className={`col ${errors && "cell-error"} col-mytable mx-0 px-0`} style={{ width: `${width}px` }}>
+							<div className={"inner-cell p-3 p-sm-3 p-md-3 p-lg-2"}>
+								{render({ value, dataIndex, col, table, record, rowIndex, colIndex })}
+							</div>
+						</div>
+					);
+				}
 			} else if (col.editor && editing && editing.mode == "row") {
 				// debugger
 				let EditorCmp = mapEditors[col.editor] || mapEditors["text"];
