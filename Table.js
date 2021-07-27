@@ -404,7 +404,6 @@ class Table extends React.Component {
 			this.props.onCellDoubleClick();
 		}
 
-		console.log("onCellDoubleClick", params)
 		if (this.props.clicksToEdit == 2) {
 			this.startEdit({
 				record: params.record,
