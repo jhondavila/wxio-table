@@ -107,7 +107,9 @@ export class Column extends React.Component {
 					value = numberFormat(format, value);
 				} else if (type == "date") {
 					format = format || "DD/MM/YYYY";
-					value = (moment(value).format(format));
+					let parse = moment(value);
+					value = parse.isValid() ? (parse.format(format)) : "";
+					// moment.invalid
 				} else {
 					value = String(value);
 				}

@@ -427,4 +427,10 @@ box-sizing: border-box;
         border-width: 1px;
         border-style: solid;
     }
+
+    .form-control {
+        .react-datetime-picker__wrapper {
+            border: none;
+        }
+    }
 }

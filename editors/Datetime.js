@@ -1,35 +1,53 @@
-import DatePicker from 'react-date-picker';
+import DateTimePicker from 'react-datetime-picker'
 import React, { useState, useEffect, useRef } from 'react';
 import { Overlay, Tooltip } from "react-bootstrap"
+import moment from "moment";
 const DatetimeEditor = (props) => {
-    let { onConfirm, onCancelEdit, dataIndex, value, record, col, table,errors, autoFocus, editing, editingErrors } = props;
+    let { onConfirm, onCancelEdit, dataIndex, value, record, col, table, errors, autoFocus, editing, editingErrors } = props;
+    value = value && value instanceof moment ? value.toDate() : value;
     let [internalValue, setInternalValue] = useState(value);
-    
+    let [calendarStatus, setCalendarStatus] = useState(false);
     // let errors = editingErrors ? editingErrors[dataIndex] : null;
-
     const [show, setShow] = useState(false);
     const target = useRef(null);
 
+    const picker = useRef(null);
+
     return (
         <>
-            <input
-                value={internalValue}
-                ref={target}
-                onChange={(e) => {
-                    setInternalValue(e.target.value)
+            <DateTimePicker
+                ref={picker}
+                className={"form-control"}
+                format={"y-MM-dd h:mm"}
+                autoFocus={true}
+                calendarIcon={false}
+                // clearIcon={false}
+                disableCalendar={true}
+                disableClock={true}
+                onCalendarClose={() => {
+                    setCalendarStatus(false);
                 }}
-                autoFocus={autoFocus}
-                type="text"
-                className={`${errors && "is-invalid"} form-control form-control-sm`}
+                onCalendarOpen={() => {
+                    setCalendarStatus(true);
+                }}
+                // onClick={()=>{
+                //     // console.log("onClick")
+
+                // }}
                 onBlur={(e) => {
-                    e.preventDefault();
-                    if (editing.mode == "cell") {
-                        onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing })
-                    } else if (editing.mode == "row") {
-                        if (e.relatedTarget && e.relatedTarget.nodeName.toLowerCase() == "input") {
-                            onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing, isTab: true })
-                        } else {
+                    e.persist()
+                    let container = picker.current.wrapper;
+                    if (container.contains(e.relatedTarget)) {
+
+                    } else {
+                        if (editing.mode == "cell") {
                             onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing })
+                        } else if (editing.mode == "row") {
+                            if (e.relatedTarget && e.relatedTarget.nodeName.toLowerCase() == "input") {
+                                onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing, isTab: true })
+                            } else {
+                                onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing })
+                            }
                         }
                     }
                 }}
@@ -41,22 +59,20 @@ const DatetimeEditor = (props) => {
                 onMouseLeave={() => {
                     setShow(false);
                 }}
-                onKeyPress={(e) => {
-                    // console.log({ dataIndex, value: internalValue })
-                }}
                 onKeyUp={(e) => {
-                    // if (e.keyCode == 9) {
-                    //     e.stopPropagation();
-                    //     onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing, isTab: true })
-                    // }
                     if (e.keyCode == 27) {
-                        // e.stopPropagation();
                         onCancelEdit({ dataIndex, record, col, table, e, editing })
                     }
                     if (e.keyCode == 13 && onConfirm) {
                         onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing })
                     }
-                }} />
+                }}
+                onChange={value => {
+                    setInternalValue(value)
+                }}
+                value={internalValue}
+            />
+
 
             <Overlay target={target.current} show={show} placement="bottom">
                 {(props) => (

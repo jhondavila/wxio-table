@@ -448,6 +448,10 @@ class Table extends React.Component {
 			editing: null,
 			editingErrors: null
 		});
+		this.editEnd({
+			editing: this.state.editing,
+			editingErrors: this.state.editingErrors
+		});
 	}
 	onConfirm = async ({ e, record, col, dataIndex, value, isTab }) => {
 		let oldValue = record.get(dataIndex);
@@ -509,6 +513,12 @@ class Table extends React.Component {
 	onEditConfirm(params) {
 		if (this.props.onEdit) {
 			this.props.onEdit(params)
+		}
+		this.editEnd(params);
+	}
+	editEnd(params) {
+		if (this.props.onEditEnd) {
+			this.props.onEditEnd(params);
 		}
 	}
 	render() {
