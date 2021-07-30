@@ -3,7 +3,7 @@ import Styled from 'styled-components';
 import moment from 'moment';
 import { format as numberFormat } from "./number/index"
 
-import { TextEditor, IntegerEditor } from "./editors"
+import { TextEditor, IntegerEditor, DatetimeEditor } from "./editors"
 
 // import React, { useState, useEffect, useRef } from 'react';
 import { Overlay, Tooltip } from "react-bootstrap"
@@ -14,7 +14,8 @@ import Path from "../util/Path"
 const mapEditors = {
 	text: TextEditor,
 	int: IntegerEditor,
-	integer: IntegerEditor
+	integer: IntegerEditor,
+	datetime: DatetimeEditor
 };
 export class Column extends React.Component {
 
