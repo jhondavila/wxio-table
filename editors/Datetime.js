@@ -18,7 +18,7 @@ const DatetimeEditor = (props) => {
             <DateTimePicker
                 ref={picker}
                 className={"form-control"}
-                format={"y-MM-dd h:mm"}
+                format={"dd-MM-y h:mm"}
                 autoFocus={true}
                 calendarIcon={false}
                 // clearIcon={false}
