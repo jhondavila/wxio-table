@@ -434,9 +434,13 @@ box-sizing: border-box;
         }
     }
 
+    .form-control-sm {
+        height: calc(1.5em + 0.5rem + 4px);
+        padding-bottom: 0;
+    }
     .form-control-combobox-fix {
         padding: 0px;
-        height: calc(1.5em + 0.5rem + 4px);
+        // height: calc(1.5em + 0.5rem + 4px);
         & > div {
             min-height: auto;
             border: none;

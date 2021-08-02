@@ -28,7 +28,7 @@ const ComboboxEditor = (props) => {
         setOptions(items);
     }
 
-
+    const debug = true;
     useEffect(() => {
         updateOptions();
         if (store) {
@@ -44,9 +44,7 @@ const ComboboxEditor = (props) => {
                 ref={target}
                 value={options.find(i => i.value == internalValue)}
                 onChange={(item, e) => {
-                    setInternalValue(item.value)
-                    console.log(target)
-                    // onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing });
+                    setInternalValue(item.value);
                 }}
                 options={options}
                 allowCreateWhileLoading={true}
@@ -56,6 +54,7 @@ const ComboboxEditor = (props) => {
                 ignoreAccents={true}
                 matchFrom={'any'}
                 autoFocus={autoFocus}
+                // menuIsOpen={true}
                 innerProps={
                     {
                         onMouseEnter: () => {
@@ -83,6 +82,9 @@ const ComboboxEditor = (props) => {
                 }}
                 onBlur={(e) => {
                     e.preventDefault();
+                    if(debug){
+                        return;
+                    }
                     if (editing.mode == "cell") {
                         onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing })
                     } else if (editing.mode == "row") {

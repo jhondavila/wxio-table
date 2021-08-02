@@ -17,8 +17,9 @@ const DatetimeEditor = (props) => {
         <>
             <DateTimePicker
                 ref={picker}
-                className={"form-control"}
-                format={"dd-MM-y h:mm"}
+                className={`${errors && "is-invalid"} form-control form-control-sm`}
+
+                format={"dd/MM/y h:mm"}
                 autoFocus={autoFocus}
                 calendarIcon={false}
                 // clearIcon={false}
@@ -77,13 +78,6 @@ const DatetimeEditor = (props) => {
             <Overlay target={target.current} show={show} placement="bottom">
                 {(props) => (
                     <Tooltip className={"my-table-tooltip my-table-tooltip-error"} {...props}>
-                        {
-
-
-
-
-
-                        }
                         {
                             errors ?
                                 col.editorMessage ?
