@@ -12,8 +12,8 @@ const TextEditor = (props) => {
     return (
         <>
             <input
-                value={internalValue}
                 ref={target}
+                value={internalValue}
                 onChange={(e) => {
                     setInternalValue(e.target.value)
                 }}

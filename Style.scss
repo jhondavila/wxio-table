@@ -433,4 +433,17 @@ box-sizing: border-box;
             border: none;
         }
     }
+
+    .form-control-combobox-fix {
+        padding: 0px;
+        height: calc(1.5em + 0.5rem + 4px);
+        & > div {
+            min-height: auto;
+            border: none;
+            height: calc(1.5em + 0.5rem + 2px);
+            /* padding: .25rem .5rem; */
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+    }
 }

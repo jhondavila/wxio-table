@@ -3,7 +3,7 @@ import Styled from 'styled-components';
 import moment from 'moment';
 import { format as numberFormat } from "./number/index"
 
-import { TextEditor, IntegerEditor, DatetimeEditor } from "./editors"
+import { TextEditor, IntegerEditor, DatetimeEditor, ComboboxEditor } from "./editors"
 
 // import React, { useState, useEffect, useRef } from 'react';
 import { Overlay, Tooltip } from "react-bootstrap"
@@ -15,7 +15,8 @@ const mapEditors = {
 	text: TextEditor,
 	int: IntegerEditor,
 	integer: IntegerEditor,
-	datetime: DatetimeEditor
+	datetime: DatetimeEditor,
+	combobox: ComboboxEditor
 };
 export class Column extends React.Component {
 
@@ -37,34 +38,41 @@ export class Column extends React.Component {
 
 		// let isError = errors ? true : false;
 
-
 		if (!hidden) {
-			if (render) {
+			if (render && (!editing || (editing && editing.dataIndex !== dataIndex))) {
+				return (
+					<div
+						onDoubleClick={onDoubleClick}
+						className={`col ${errors && "cell-error"} col-mytable mx-0 px-0`} style={{ width: `${width}px` }}>
+						<div className={"inner-cell p-3 p-sm-3 p-md-3 p-lg-2"}>
+							{render({ value, dataIndex, col, table, record, rowIndex, colIndex })}
+						</div>
+					</div>
+				);
 				if (col.editor && editing && editing.mode == "cell" && editing.dataIndex == dataIndex) {
-					return (
-						<div className="col col-mytable mx-0 px-0" style={{ width: `${width}px` }} onDoubleClick={onDoubleClick}>
-							{
-								col.editor({ value, dataIndex, col, table, record, rowIndex, colIndex, editing, onConfirm, onCancelEdit })
-							}
-						</div>
-					)
-				} else {
-					return (
-						<div
-							onDoubleClick={onDoubleClick}
-							className={`col ${errors && "cell-error"} col-mytable mx-0 px-0`} style={{ width: `${width}px` }}>
-							<div className={"inner-cell p-3 p-sm-3 p-md-3 p-lg-2"}>
-								{render({ value, dataIndex, col, table, record, rowIndex, colIndex })}
-							</div>
-						</div>
-					);
+
 				}
-			} else if (col.editor && editing && editing.mode == "row") {
-				// debugger
-				let EditorCmp = mapEditors[col.editor] || mapEditors["text"];
+			} else if (typeof col.editor == "function" && editing && (editing.mode == "row" || (editing.mode == "cell" && editing.dataIndex == dataIndex))) {
+				return (
+					<div className="col col-mytable mx-0 px-0" style={{ width: `${width}px` }} onDoubleClick={onDoubleClick}>
+						{
+							col.editor({ value, dataIndex, col, table, record, rowIndex, colIndex, editing, onConfirm, onCancelEdit })
+						}
+					</div>
+				)
+			} else if (col.editor && editing && (editing.mode == "row" || (editing.mode == "cell" && editing.dataIndex == dataIndex))) {
+				let EditorCmp;
+				let editorConfig;
+				if (col.editor && col.editor.type) {
+					EditorCmp = mapEditors[col.editor.type] || mapEditors["text"];
+					editorConfig = col.editor;
+				} else {
+					EditorCmp = mapEditors[col.editor] || mapEditors["text"];
+				}
 				return (
 					<div className="col col-mytable mx-0 px-0" style={{ width: `${width}px` }}>
 						<EditorCmp
+							{...editorConfig}
 							onConfirm={onConfirm}
 							onCancelEdit={onCancelEdit}
 							dataIndex={dataIndex}
@@ -79,29 +87,40 @@ export class Column extends React.Component {
 						/>
 					</div>
 				)
-			} else if (col.editor && editing && editing.mode == "cell" && editing.dataIndex == dataIndex) {
-				let EditorCmp = mapEditors[col.editor] || mapEditors["text"];
-				return (
-					<div className="col col-mytable mx-0 px-0" style={{ width: `${width}px` }}>
-						<EditorCmp
-							onConfirm={onConfirm}
-							onCancelEdit={onCancelEdit}
-							dataIndex={dataIndex}
-							value={value}
-							record={record}
-							col={col}
-							table={table}
-							autoFocus={true}
-							editing={editing}
-							editingErrors={editingErrors}
-							errors={errors}
-						// onBlur={(e) => {
-						// 	onConfirm({ dataIndex, value: internalValue, record, col, table, e })
-						// }}
-						/>
-					</div>
-				)
-			} else {
+			}
+			// else if (col.editor && editing && editing.mode == "cell" && editing.dataIndex == dataIndex) {
+
+			// 	let EditorCmp;
+			// 	let editorConfig;
+			// 	if (col.editor && col.editor.type) {
+			// 		EditorCmp = mapEditors[col.editor.type] || mapEditors["text"];
+			// 		editorConfig = col.editor.type;
+			// 	} else {
+			// 		EditorCmp = mapEditors[col.editor] || mapEditors["text"];
+			// 	}
+			// 	return (
+			// 		<div className="col col-mytable mx-0 px-0" style={{ width: `${width}px` }}>
+			// 			<EditorCmp
+			// 				{...editorConfig}
+			// 				onConfirm={onConfirm}
+			// 				onCancelEdit={onCancelEdit}
+			// 				dataIndex={dataIndex}
+			// 				value={value}
+			// 				record={record}
+			// 				col={col}
+			// 				table={table}
+			// 				autoFocus={editing.dataIndex == dataIndex}
+			// 				editingErrors={editingErrors}
+			// 				editing={editing}
+			// 				errors={errors}
+			// 			// onBlur={(e) => {
+			// 			// 	onConfirm({ dataIndex, value: internalValue, record, col, table, e })
+			// 			// }}
+			// 			/>
+			// 		</div>
+			// 	)
+			// }
+			else {
 				if (type == "number") {
 					format = format || "#,###.00";
 					value = numberFormat(format, value);
