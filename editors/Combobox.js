@@ -28,7 +28,7 @@ const ComboboxEditor = (props) => {
         setOptions(items);
     }
 
-    const debug = true;
+    const debug = false;
     useEffect(() => {
         updateOptions();
         if (store) {
@@ -88,6 +88,7 @@ const ComboboxEditor = (props) => {
                     if (editing.mode == "cell") {
                         onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing })
                     } else if (editing.mode == "row") {
+                        console.log(e.relatedTarget)
                         if (e.relatedTarget && e.relatedTarget.nodeName.toLowerCase() == "input") {
                             onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing, isTab: true })
                         } else {

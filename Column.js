@@ -38,7 +38,7 @@ export class Column extends React.Component {
 
 		// let isError = errors ? true : false;
 		if (!hidden) {
-			if (render && !editing) {
+			if (render && (!editing || (editing.mode == "cell" && editing.dataIndex !== dataIndex))) {
 				return (
 					<div
 						onDoubleClick={onDoubleClick}
