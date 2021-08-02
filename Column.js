@@ -37,9 +37,8 @@ export class Column extends React.Component {
 
 
 		// let isError = errors ? true : false;
-
 		if (!hidden) {
-			if (render && (!editing || (editing && editing.dataIndex !== dataIndex))) {
+			if (render && !editing) {
 				return (
 					<div
 						onDoubleClick={onDoubleClick}
@@ -49,9 +48,6 @@ export class Column extends React.Component {
 						</div>
 					</div>
 				);
-				if (col.editor && editing && editing.mode == "cell" && editing.dataIndex == dataIndex) {
-
-				}
 			} else if (typeof col.editor == "function" && editing && (editing.mode == "row" || (editing.mode == "cell" && editing.dataIndex == dataIndex))) {
 				return (
 					<div className="col col-mytable mx-0 px-0" style={{ width: `${width}px` }} onDoubleClick={onDoubleClick}>

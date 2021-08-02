@@ -38,7 +38,6 @@ const ComboboxEditor = (props) => {
         }
     }, [])
 
-    errors = [ {message : "text"}]
     return (
         <>
             <Select
