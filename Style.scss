@@ -450,4 +450,8 @@ box-sizing: border-box;
             line-height: 1.5;
         }
     }
+
+    .react-datetime-picker__inputGroup__input:focus-visible{
+        outline: unset!important;
+    }
 }

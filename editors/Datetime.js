@@ -21,8 +21,8 @@ const DatetimeEditor = (props) => {
 
                 format={"dd/MM/y HH:mm"}
                 autoFocus={autoFocus}
-                calendarIcon={false}
-                // clearIcon={false}
+                calendarIcon={null}
+                clearIcon={null}
                 disableCalendar={true}
                 disableClock={true}
                 onCalendarClose={() => {
