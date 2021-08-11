@@ -3,137 +3,235 @@ import { Overlay, Tooltip } from "react-bootstrap";
 import Select from 'react-select';
 import Creatable, { makeCreatableSelect } from 'react-select/creatable';
 
-const ComboboxEditor = (props) => {
-    let { onConfirm, onCancelEdit, dataIndex, value, record, col, table, errors, autoFocus, editing, editingErrors, store, displayField, valueField,placeholder } = props;
-    let [internalValue, setInternalValue] = useState(value);
-
-    // let errors = editingErrors ? editingErrors[dataIndex] : null;
-
-    const [show, setShow] = useState(true);
-
-    const [menuOpen, setMenuOpen] = useState(false);
 
 
-    const [options, setOptions] = useState([]);
+const mapEditors = {
+    select: Select,
+    creatable: Creatable
+    // text: TextEditor,
+    // int: IntegerEditor,
+    // integer: IntegerEditor,
+    // datetime: DatetimeEditor,
+    // combobox: ComboboxEditor
+};
 
-    const target = useRef(null);
+class ComboboxEditor extends React.Component {
 
-    const updateOptions = () => {
+    constructor(props) {
+        super(props);
+        this.state = {
+            show: true,
+            menuOpen: false,
+            isLoading: false,
+            // creating: false,
+            options: [],
+            internalValue: this.props.value
+        };
+        this.timeoutBlur = null;
+        this.timeoutKeyPress = null;
+        this.creating = false;
+        this.target = React.createRef();
+    }
+
+    componentDidMount() {
+        let { store } = this.props;
+
+        if (store) {
+            this.updateOptions();
+
+            store.on("load", this.updateOptions);
+            store.on("add", this.updateOptions);
+            store.on("update", this.updateOptions);
+        }
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.store !== this.props.store) {
+            this.updateOptions();
+        }
+    }
+    updateOptions = () => {
+        let { store, displayField, valueField } = this.props;
+
         let items = store.map(i => {
             return {
                 value: i[valueField],
                 label: i[displayField]
             }
         });
-        setOptions(items);
+        this.setState({
+            options: items
+        })
     }
+    setIsLoading(value) {
+        this.setState({
+            isLoading: value
+        })
+    }
+    setValue(value, options = {}) {
+        this.setState({
+            internalValue: value
+        })
+    }
+    render() {
 
-    const debug = false;
-    useEffect(() => {
-        updateOptions();
-        if (store) {
-            store.on("load", updateOptions);
-            store.on("add", updateOptions);
-            store.on("update", updateOptions);
-        }
-    }, [])
+        let { onConfirm, onCancelEdit, dataIndex, value, record, col, table, errors, autoFocus, editing, editingErrors, store, displayField, valueField, placeholder, creatable, onCreateOption, isValidNewOption } = this.props;
 
-    return (
-        <>
-            <Select
-                ref={target}
-                value={options.find(i => i.value == internalValue)}
-                onChange={(item, e) => {
-                    setInternalValue(item.value);
-                }}
-                options={options}
-                allowCreateWhileLoading={true}
+        let {
+            show,
+            menuOpen,
+            isLoading,
+            creating,
+            options,
+            internalValue,
+        } = this.state;
 
-                placeholder={placeholder}
-                ignoreCase={true}
-                ignoreAccents={true}
-                matchFrom={'any'}
-                autoFocus={autoFocus}
-                // menuIsOpen={true}
-                innerProps={
-                    {
-                        onMouseEnter: () => {
-                            console.log("onMouseEnter")
-                            if (errors) {
-                                setShow(true);
+
+        const EditorCmp = creatable ? mapEditors["creatable"] : mapEditors["select"];
+        console.log("rendercombobox")
+
+        return (
+            <>
+                <EditorCmp
+                    ref={this.target}
+                    value={options.find(i => i.value == internalValue)}
+                    onChange={(item, e) => {
+                        this.setState({
+                            internalValue: item.value
+                        })
+                    }}
+                    options={options}
+                    allowCreateWhileLoading={true}
+
+                    placeholder={placeholder}
+                    ignoreCase={true}
+                    ignoreAccents={true}
+                    matchFrom={'any'}
+                    autoFocus={autoFocus}
+                    // menuIsOpen={true}
+
+
+                    isDisabled={isLoading}
+                    isLoading={isLoading}
+                    isValidNewOption={isValidNewOption}
+
+
+                    onCreateOption={async (inputValue) => {
+                        if (this.timeoutBlur) {
+                            clearTimeout(this.timeoutBlur)
+                            this.timeoutBlur = null;
+                        }
+                        if (this.timeoutKeyPress) {
+                            clearTimeout(this.timeoutKeyPress)
+                            this.timeoutKeyPress = null;
+                        }
+                        this.creating = true;
+                        await onCreateOption({
+
+                            inputValue,
+                            setLoading: this.setIsLoading.bind(this),
+                            setValue: this.setValue.bind(this),
+
+
+                        });
+                        this.creating = false;
+                    }}
+
+
+                    innerProps={
+                        {
+                            onMouseEnter: () => {
+                                console.log("onMouseEnter")
+                                if (errors) {
+                                    this.setState({
+                                        show: true
+                                    })
+                                }
+                            },
+                            onMouseLeave: () => {
+                                console.log("onMouseLeave")
+                                this.setState({
+                                    show: false
+                                })
                             }
-                        },
-                        onMouseLeave: () => {
-                            console.log("onMouseLeave")
-                            setShow(false);
                         }
                     }
-                }
-                className={`${errors && "is-invalid"} form-control form-control-sm form-control-combobox-fix`}
-                onMenuOpen={() => setMenuOpen(true)}
-                onMenuClose={() => setMenuOpen(false)}
-                menuPosition={"fixed"}
-                styles={{
-                    menu: (provided, state) => {
-                        return {
-                            ...provided
-                        };
-                    }
-                }}
-                onBlur={(e) => {
-                    e.preventDefault();
-                    if(debug){
-                        return;
-                    }
-                    if (editing.mode == "cell") {
-                        onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing })
-                    } else if (editing.mode == "row") {
-                        console.log(e.relatedTarget)
-                        if (e.relatedTarget && e.relatedTarget.nodeName.toLowerCase() == "input") {
-                            onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing, isTab: true })
-                        } else {
-                            onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing })
+                    className={`${errors && "is-invalid"} form-control form-control-sm form-control-combobox-fix`}
+                    onMenuOpen={() => this.setState({ menuOpen: true })}
+                    onMenuClose={() => this.setState({ menuOpen: false })}
+                    menuPosition={"fixed"}
+                    styles={{
+                        menu: (provided, state) => {
+                            return {
+                                ...provided
+                            };
                         }
-                    }
-                }}
-                onKeyDown={(e) => {
-                    if (e.keyCode == 27) {
-                        onCancelEdit({ dataIndex, record, col, table, e, editing });
-                    }
-                    if (e.keyCode == 13 && onConfirm) {
-                        if (!menuOpen) {
-                            onConfirm({ dataIndex, value: internalValue, record, col, table, e, editing })
+                    }}
+                    onBlur={(e) => {
+                        e.preventDefault();
+                        console.log("onBlur")
+
+                        if (this.creating) {
+                            return;
                         }
-                    }
-                }}
-            />
-            <Overlay target={target.current} show={show} placement="bottom">
-                {(props) => (
-                    <Tooltip className={"my-table-tooltip my-table-tooltip-error"} {...props}>
-                        {
+
+                        let relatedTarget = e.relatedTarget;
+                        let relatedTargetType = e.relatedTarget && e.relatedTarget.nodeName.toLowerCase() ? e.relatedTarget.nodeName.toLowerCase() : null
+                        let timeout = setTimeout(() => {
+                            if (editing.mode == "cell") {
+                                onConfirm({ dataIndex, value: internalValue, record, col, table, editing })
+                            } else if (editing.mode == "row") {
+                                // console.log(e.relatedTarget)
+                                if (relatedTarget && relatedTargetType == "input") {
+                                    onConfirm({ dataIndex, value: internalValue, record, col, table, editing, isTab: true })
+                                } else {
+                                    onConfirm({ dataIndex, value: internalValue, record, col, table, editing })
+                                }
+                            }
+                            this.timeoutBlur = null;
+                        }, 30);
+                        this.timeoutBlur = timeout;
+                    }}
+                    onKeyDown={(e) => {
+                        console.log("onKeyDown")
+                        let keyCode = e.keyCode;
+                        let timeout = setTimeout(() => {
+                            if (keyCode == 27) {
+                                onCancelEdit({ dataIndex, record, col, table, editing });
+                            }
+                            if (keyCode == 13 && onConfirm) {
+                                if (!menuOpen) {
+                                    onConfirm({ dataIndex, value: internalValue, record, col, table, editing })
+                                }
+                            }
+                            this.timeoutKeyPress = null
+
+                        }, 30)
+                        this.timeoutKeyPress = timeout
 
 
+                    }}
+                />
+                <Overlay target={this.target.current} show={show} placement="bottom">
+                    {(props) => (
+                        <Tooltip className={"my-table-tooltip my-table-tooltip-error"} {...props}>
+                            {
+                                errors ?
+                                    col.editorMessage ?
+                                        col.editorMessage({ errors }) :
+                                        errors.map(i => {
+                                            return i.message
+                                        }).join("\n")
+                                    : null
+                            }
+                        </Tooltip>
 
+                    )}
+                </Overlay>
 
+            </>
 
-                        }
-                        {
-                            errors ?
-                                col.editorMessage ?
-                                    col.editorMessage({ errors }) :
-                                    errors.map(i => {
-                                        return i.message
-                                    }).join("\n")
-                                : null
-                        }
-                    </Tooltip>
-
-                )}
-            </Overlay>
-
-        </>
-
-    )
+        )
+    }
 }
 export {
     ComboboxEditor
