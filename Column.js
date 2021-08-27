@@ -8,7 +8,7 @@ import { TextEditor, IntegerEditor, DatetimeEditor, ComboboxEditor } from "./edi
 // import React, { useState, useEffect, useRef } from 'react';
 import { Overlay, Tooltip } from "react-bootstrap"
 import * as _ from "lodash"
-import Path from "../util/Path"
+import Path from "../../util/Path"
 
 
 const mapEditors = {

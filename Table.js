@@ -11,7 +11,7 @@ import {
 } from "../exporter/Exporter";
 
 import equal from "fast-deep-equal";
-import Path from "../util/Path"
+import Path from "../../util/Path"
 
 let colCountId = 0;
 class Table extends React.Component {
