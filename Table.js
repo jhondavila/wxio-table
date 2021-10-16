@@ -405,10 +405,14 @@ class Table extends React.Component {
 		}
 
 		if (this.props.clicksToEdit == 2) {
-			this.startEdit({
-				record: params.record,
-				dataIndex: params.dataIndex
-			})
+			if (params.col.editor) {
+				this.startEdit({
+					record: params.record,
+					dataIndex: params.dataIndex
+				})
+			}else{
+				
+			}
 		}
 
 	}

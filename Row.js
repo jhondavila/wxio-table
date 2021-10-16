@@ -48,7 +48,8 @@ export const Row = React.forwardRef((props, ref) => {
                                     table: table,
                                     record: data,
                                     rowIndex: index,
-                                    colIndex
+                                    colIndex,
+                                    col
                                 })
                             }
                             }
