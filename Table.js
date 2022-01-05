@@ -86,16 +86,25 @@ class Table extends React.Component {
 		store.removeListener("remove", this.onLoadingStore);
 	}
 	onRemoveStore = (store) => {
+		if(this.destroyed){
+			return;
+		}
 		this.setState({
 			myData: store.data
 		});
 	}
 	onAddStore = (store) => {
+		if(this.destroyed){
+			return;
+		}
 		this.setState({
 			myData: store.data
 		});
 	}
 	onLoadingStore = (store, loading) => {
+		if(this.destroyed){
+			return;
+		}
 		this.setState({
 			myData: store.data
 		});
@@ -112,6 +121,7 @@ class Table extends React.Component {
 		if (this.props.store) {
 			this.removeHooks(this.props.store);
 		}
+		this.destroyed = true;
 	}
 	async componentDidUpdate(prevProps) {
 		if (prevProps.store !== this.props.store) {
