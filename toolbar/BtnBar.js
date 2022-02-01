@@ -14,11 +14,15 @@ const Btn = CmpStyle.a`
         color:${({ theme }) => theme.btnClrToolBarHover ? theme.btnClrToolBarHover : "#417cb9"} !important;
     
     }
+    [title]:hover{
+        background-color: 'black'
+    }
+
 `;
 
-export const BtnBar = ({ iconCls, onClick, href, className, children }) => {
+export const BtnBar = ({ iconCls, onClick, href, className, children, title }) => {
     return (
-        <Btn className={className} onClick={onClick ? () => onClick() : null} href={href ? href : null}><i className={iconCls}></i>{children}</Btn>
+        <Btn className={className} onClick={onClick ? () => onClick() : null} href={href ? href : null} title={title}><i className={iconCls}></i>{children}</Btn>
     );
 }
 
