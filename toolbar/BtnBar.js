@@ -13,9 +13,10 @@ const Btn = CmpStyle.a`
         border: 1px solid ${({ theme }) => theme.btnToolBrdHover ? theme.btnToolBrdHover :  "#417cb9"} !important;
         color:${({ theme }) => theme.btnClrToolBarHover ? theme.btnClrToolBarHover : "#417cb9"} !important;
     
-    }
+    };
     [title]:hover{
-        background-color: 'black'
+        background-color: 'black';
+        color:'white';
     }
 
 `;

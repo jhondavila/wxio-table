@@ -216,6 +216,10 @@ class Table extends React.Component {
 		}
 	}
 
+	getSelection = () =>{
+		return this.state.recordSelection
+	}
+
 	selectionModel = (e, row) => {
 		if (this.props.onClickRow) {
 			this.props.onClickRow(row);
@@ -243,8 +247,8 @@ class Table extends React.Component {
 		}
 	}
 	selectionChange() {
-		if (this.props.onSelectionChange) {
-			let selection = [];
+    let	selection = [];
+	
 			if (this.state.checkedAll) {
 				selection.push(...this.props.store.data);
 			} else {
@@ -253,8 +257,13 @@ class Table extends React.Component {
 					selection.push(record);
 				}
 			}
-			this.props.onSelectionChange(selection)
-		}
+			
+			this.setState({
+				recordSelection: selection
+			});
+			
+			if(this.props.onSelectionChange) this.props.onSelectionChange(selection);
+		
 	}
 	onDblClickRow(row) {
 		console.log("onDblClickRow")
