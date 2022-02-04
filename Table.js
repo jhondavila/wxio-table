@@ -30,7 +30,6 @@ class Table extends React.Component {
 			editingErrors: null,
 
 		}
-		window.mytable = this;
 
 		this._nodes = new Map();
 	}
