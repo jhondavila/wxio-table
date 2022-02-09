@@ -1,5 +1,7 @@
 import React from 'react';
+import { Button } from "react-bootstrap";
 import CmpStyle from 'styled-components';
+import './BtnBar.scss';
 
 const Btn = CmpStyle.a`
     background-color: ${({ theme }) => theme.btnBgToolBar ? theme.btnBgToolBar : '#f5f5f5'};
@@ -21,9 +23,9 @@ const Btn = CmpStyle.a`
 
 `;
 
-export const BtnBar = ({ iconCls, onClick, href, className, children, title }) => {
+export const BtnBar = ({ iconCls, onClick, href, className, children, title, disabled}) => {
     return (
-        <Btn className={className} onClick={onClick ? () => onClick() : null} href={href ? href : null} title={title}><i className={iconCls}></i>{children}</Btn>
+        <Button className="btn-tool-bar" onClick={onClick ? () => onClick() : null} href={href ? href : null} title={title} disabled={disabled} ><i className={iconCls}></i>{children}</Button>
     );
 }
 

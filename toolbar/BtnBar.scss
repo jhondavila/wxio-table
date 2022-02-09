@@ -1,0 +1,27 @@
+.btn-tool-bar {
+  //background-color: #f5f5f5;
+
+  border-radius: 0px;
+  color: #417cb9;
+  background-color: #ffffff;
+  border-color: #ffffff;
+  //border: 1px solid #ddd !important;
+  //text-decoration: none;
+  margin-right: 5px;
+  min-width: 43px;
+  padding: 6px 10px;
+  //color: #929292  !important;
+}
+
+.btn-tool-bar:disabled {
+  color: #3a3a3a;
+  background-color: #ffffff;
+  border-color: #ffffff;
+}
+
+.btn-tool-bar[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: -100%;
+  left: 0;
+}
