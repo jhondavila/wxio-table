@@ -451,7 +451,33 @@ box-sizing: border-box;
         }
     }
 
-    .react-datetime-picker__inputGroup__input:focus-visible{
-        outline: unset!important;
+    .react-datetime-picker__inputGroup__input:focus-visible {
+        outline: unset !important;
+    }
+}
+
+.wx-table-loading {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+
+    // font-size: 24px;
+    .fade-loading {
+        background-color: white;
+        width: 100%;
+        height: 100%;
+        opacity: 0.6;
+    }
+
+    .body-loading {
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        .icon {
+            font-size: 25px;
+        }
+        .message {
+        }
     }
 }

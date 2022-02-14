@@ -10,6 +10,8 @@ import {
 	Exporter
 } from "../exporter/Exporter";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleNotch, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import equal from "fast-deep-equal";
 import Path from "../../util/Path"
 
@@ -28,7 +30,7 @@ class Table extends React.Component {
 			checkedAll: false,
 			editing: null,
 			editingErrors: null,
-
+			loading: false
 		}
 
 		this._nodes = new Map();
@@ -78,14 +80,29 @@ class Table extends React.Component {
 		store.on("add", this.onAddStore);
 		store.on("loading", this.onLoadingStore);
 		store.on("remove", this.onRemoveStore);
+		store.on("validateRecords", this.onValidateRecords)
+		store.on("validateRecordsEnd", this.onValidateRecordsEnd)
 	}
 	removeHooks(store) {
 		store.removeListener("add", this.onAddStore);
 		store.removeListener("loading", this.onLoadingStore);
 		store.removeListener("remove", this.onLoadingStore);
+		store.removeListener("validateRecordsEnd", this.onValidateRecordsEnd);
+	}
+	onValidateRecordsEnd = () => {
+		if (this.destroyed) {
+			return;
+		}
+		this.setLoading(false);
+	}
+	onValidateRecords = () => {
+		if (this.destroyed) {
+			return;
+		}
+		this.setLoading(true);
 	}
 	onRemoveStore = (store) => {
-		if(this.destroyed){
+		if (this.destroyed) {
 			return;
 		}
 		this.setState({
@@ -93,7 +110,7 @@ class Table extends React.Component {
 		});
 	}
 	onAddStore = (store) => {
-		if(this.destroyed){
+		if (this.destroyed) {
 			return;
 		}
 		this.setState({
@@ -101,7 +118,7 @@ class Table extends React.Component {
 		});
 	}
 	onLoadingStore = (store, loading) => {
-		if(this.destroyed){
+		if (this.destroyed) {
 			return;
 		}
 		this.setState({
@@ -215,7 +232,7 @@ class Table extends React.Component {
 		}
 	}
 
-	getSelection = () =>{
+	getSelection = () => {
 		return this.state.recordSelection
 	}
 
@@ -246,23 +263,23 @@ class Table extends React.Component {
 		}
 	}
 	selectionChange() {
-    let	selection = [];
-	
-			if (this.state.checkedAll) {
-				selection.push(...this.props.store.data);
-			} else {
-				for (let p in this.state.selection) {
-					let record = this.props.store.getById(p);
-					selection.push(record);
-				}
+		let selection = [];
+
+		if (this.state.checkedAll) {
+			selection.push(...this.props.store.data);
+		} else {
+			for (let p in this.state.selection) {
+				let record = this.props.store.getById(p);
+				selection.push(record);
 			}
-			
-			this.setState({
-				recordSelection: selection
-			});
-			
-			if(this.props.onSelectionChange) this.props.onSelectionChange(selection);
-		
+		}
+
+		this.setState({
+			recordSelection: selection
+		});
+
+		if (this.props.onSelectionChange) this.props.onSelectionChange(selection);
+
 	}
 	onDblClickRow(row) {
 		console.log("onDblClickRow")
@@ -428,8 +445,8 @@ class Table extends React.Component {
 					record: params.record,
 					dataIndex: params.dataIndex
 				})
-			}else{
-				
+			} else {
+
 			}
 		}
 
@@ -543,9 +560,34 @@ class Table extends React.Component {
 			this.props.onEditEnd(params);
 		}
 	}
+
+	setLoading(value) {
+		this.setState({
+			loading: value
+		});
+	}
 	render() {
 		return (
 			<div className="table flex-fill">
+				{
+					this.state.loading &&
+					<div className='wx-table-loading'>
+						<div className='fade-loading'>
+
+						</div>
+						<div className='body-loading'>
+							<div className='icon'>
+								<FontAwesomeIcon icon={faSpinner} spin />
+							</div>
+							<div className='message'>
+
+							</div>
+						</div>
+
+					</div>
+				}
+
+
 				<Exporter columns={this.state.tblColumns} store={this.props.store} ref={c => this.exporter = c}></Exporter>
 				<Menu ref={c => this.menu = c} >
 					<RowB className="wx-item" onClick={this.sortAsc.bind(this)}>
@@ -605,7 +647,10 @@ class Table extends React.Component {
 
 					</div>
 					<div className="tbody flex-fill" onScroll={this.onScroll} ref={(c) => { this.bodyEl = c }}>
-						{/* {this.state.loadingData ? <Loading height={this.props.toolPage && this.props.store ? "calc(100% - 38px)" : null} mensaje="Cargando datos...!!!" /> : null} */}
+						{/* {this.state.loadingData ?  */}
+
+
+
 						<div className="tbodycapa flex-column" style={{ width: this.state.widthTable + 'px' }}>
 							{typeof (this.state.myData) == 'undefined' || this.state.myData.length > 0 ? null : <div style={{ display: 'inline-block', width: this.state.widthTable + 'px', height: '0px !importan' }}></div>}
 							{
