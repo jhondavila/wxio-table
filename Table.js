@@ -25,6 +25,7 @@ class Table extends React.Component {
 			selection: {},
 			loadingData: true,
 			tblColumns: [],
+			tblColumnsAll: [],
 			widthTable: "",
 			widthHeader: "",
 			checkedAll: false,
@@ -39,13 +40,34 @@ class Table extends React.Component {
 	scrollEnd() {
 		this.bodyEl.scrollTop = this.bodyEl.scrollHeight;
 	}
+
+	getColumns() {
+		let ColumsAll = [];
+		let cols = this.props.columns ? this.props.columns : this.props.children;
+
+		cols.map((col) => {
+			let addColl = col.props ? col.props : col;
+			ColumsAll.push(addColl);
+			if (!col.dataIndex) {
+				colCountId++;
+				col.id = `col-${colCountId}`
+			} else {
+				col.id = col.dataIndex;
+			}
+		});
+
+		window.columnas = ColumsAll;
+		this.setState({
+			tblColumnsAll: ColumsAll,
+		});
+	}
+
 	crearColumnas() {
 		let newWidth = 0;
 		let tableColums = [];
-		let cols = this.props.columns ? this.props.columns : this.props.children;
-		cols = cols || [];
-
-
+		//let cols = this.props.columns ? this.props.columns : this.props.children;
+		let cols = this.state.tblColumnsAll || [];
+		
 		cols = cols.filter(i => i.hidden !== true);
 
 		if (this.props.selectionMode == "multiple") {
@@ -65,13 +87,22 @@ class Table extends React.Component {
 			} else {
 				col.id = col.dataIndex;
 			}
+
+			if (col.hidden) {
+				col.hidden = col.hidden;
+			} else {
+				col.hidden = false;
+			}
+
 		})
+
 		this.setState({
 			tblColumns: tableColums,
 			widthTable: newWidth + 1,
 			widthHeader: newWidth + 1
 		}, () => {
 			this.fixSizeScroll();
+			this.forceUpdate();
 		});
 
 
@@ -152,6 +183,7 @@ class Table extends React.Component {
 			}
 		}
 		if (prevProps.columns !== this.props.columns) {
+			this.getColumns();
 			this.crearColumnas();
 		}
 		if (equal(prevProps.staticFilters, this.props.staticFilters) == false) {
@@ -163,6 +195,7 @@ class Table extends React.Component {
 
 	}
 	async componentDidMount() {
+		await this.getColumns();
 		this.crearColumnas();
 		// this.headerMenu = new Menu();
 		// console.log(this.headerMenu)
@@ -319,7 +352,7 @@ class Table extends React.Component {
 
 	}
 	onChecked = (value, data) => {
-		console.log(value)
+		console.log(value,data)
 		if (data) {
 			//console.log(data)
 			if (value) {
@@ -375,6 +408,12 @@ class Table extends React.Component {
 	sortDesc() {
 		let column = this.columnMenu;
 		this.sort(column.dataIndex, "DESC")
+		// console.log("sortDesc", this.columnMenu)
+	}
+	loadColumns() {
+		let column = this.columnMenu;
+		//this.sort(column.dataIndex, "DESC")
+		//console.log(this.state.tblColumnsAll, "columns")
 		// console.log("sortDesc", this.columnMenu)
 	}
 	resizeColumnDrag(column, data, colClientRect) {
@@ -601,6 +640,13 @@ class Table extends React.Component {
 							<i className="fas fa-sort-alpha-down-alt"></i>
 						</div>
 						Orden Descendente
+					</RowB>
+					<RowB className="wx-divider"/>
+					<RowB className="wx-item" onClick={this.loadColumns.bind(this)}>
+						<div className="wx-item-icon">
+							<i className="fad fa-line-columns"></i>
+						</div>
+						Columnas
 					</RowB>
 				</Menu>
 
