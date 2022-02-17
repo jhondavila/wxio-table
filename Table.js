@@ -2,6 +2,7 @@ import React from 'react';
 import { ColumnHeader, HeaderTable, Row, Pagin, CheckColumn } from './';
 // import { Loading } from '../';
 import Menu from "../menu/index";
+import ViewColumns from './ViewColumns';
 
 import { Row as RowB } from 'react-bootstrap';
 import "./Style.scss";
@@ -56,7 +57,7 @@ class Table extends React.Component {
 			}
 		});
 
-		window.columnas = ColumsAll;
+		//window.columnas = ColumsAll;
 		this.setState({
 			tblColumnsAll: ColumsAll,
 		});
@@ -410,8 +411,20 @@ class Table extends React.Component {
 		this.sort(column.dataIndex, "DESC")
 		// console.log("sortDesc", this.columnMenu)
 	}
-	loadColumns() {
+	async loadColumns() {
 		let column = this.columnMenu;
+
+		console.log(this.state.tblColumnsAll);
+
+		let columns = await ViewColumns({columns: this.state.tblColumnsAll});
+
+		this.setState({
+			tblColumnsAll: columns
+		}, ()=>{
+			this.crearColumnas();
+			//this.forceUpdate()
+		});
+		
 		//this.sort(column.dataIndex, "DESC")
 		//console.log(this.state.tblColumnsAll, "columns")
 		// console.log("sortDesc", this.columnMenu)
