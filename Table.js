@@ -414,16 +414,17 @@ class Table extends React.Component {
 	async loadColumns() {
 		let column = this.columnMenu;
 
-		console.log(this.state.tblColumnsAll);
-
 		let columns = await ViewColumns({columns: this.state.tblColumnsAll});
 
-		this.setState({
-			tblColumnsAll: columns
-		}, ()=>{
-			this.crearColumnas();
-			//this.forceUpdate()
-		});
+		if (columns){
+
+			this.setState({
+				tblColumnsAll: columns
+			}, ()=>{
+				this.crearColumnas();
+				//this.forceUpdate()
+			});
+		}
 		
 		//this.sort(column.dataIndex, "DESC")
 		//console.log(this.state.tblColumnsAll, "columns")
