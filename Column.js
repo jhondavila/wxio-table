@@ -44,7 +44,7 @@ export class Column extends React.Component {
 						onDoubleClick={onDoubleClick}
 						className={`col ${errors && "cell-error"} col-mytable mx-0 px-0`} style={{ width: `${width}px` }}>
 						<div className={"inner-cell p-3 p-sm-3 p-md-3 p-lg-2"}>
-							{render({ value, dataIndex, col, table, record, rowIndex, colIndex })}
+							{render({ value, dataIndex, col, table, record, rowIndex, colIndex , cell : this })}
 						</div>
 					</div>
 				);
