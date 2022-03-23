@@ -18,20 +18,20 @@ const HeaderContainer = Styled.div`
 `
 
 
-export const HeaderTable = ({ columns = [], myWidth=100 }) => {
+export const HeaderTable = ({ columns = [], myWidth = 100 }) => {
 
-    return (
-        <HeaderContainer>
-            <Header myWidth={myWidth}>
-                {
-                    columns ?
-                        (
-                            columns.map((c, index) => {
-                                return (<ColumnHeader key={index} width={c.width} text={c.text} align={c.align} />);
-                            })
-                        ) : null
-                }
-            </Header>
-        </HeaderContainer>
-    );
+	return (
+		<HeaderContainer>
+			<Header myWidth={myWidth}>
+				{
+					columns ?
+						(
+							columns.map((c, index) => {
+								return (<ColumnHeader key={index} width={c.width} text={c.text} align={c.align} />);
+							})
+						) : null
+				}
+			</Header>
+		</HeaderContainer>
+	);
 }

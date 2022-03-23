@@ -44,6 +44,8 @@ class Table extends React.Component {
 
 	getColumns() {
 		let ColumsAll = [];
+
+		console.log(this);
 		let cols = this.props.columns ? this.props.columns : this.props.children;
 
 		cols.map((col) => {
@@ -414,10 +416,9 @@ class Table extends React.Component {
 	async loadColumns() {
 		let column = this.columnMenu;
 
-		let columns = await ViewColumns({columns: this.state.tblColumnsAll});
+		let columns = await ViewColumns({columns: this.state.tblColumnsAll, reportList: this.props.userInfo});
 
 		if (columns){
-
 			this.setState({
 				tblColumnsAll: columns
 			}, ()=>{

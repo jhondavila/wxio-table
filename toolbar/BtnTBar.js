@@ -3,11 +3,11 @@ import { Dropdown, ButtonGroup, Button  } from "react-bootstrap";
 import './BtnTBar.scss';
 
 
-export const BtnTBar = ({ iconCls, menu=[], href, className, children, title }) => {
+export const BtnTBar = ({ iconCls, onClick, menu=[], href, className, children, title }) => {
   return (
     <>
       <Dropdown as={ButtonGroup} className={'drpgrp'}>
-        <Button ><i className={iconCls}></i></Button>
+        <Button ><i className={iconCls} onClick={onClick ? () => onClick() : null}></i></Button>
         
         <Dropdown.Toggle split id="dropdown-split-basic"/>
         
