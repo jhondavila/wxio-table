@@ -5,13 +5,13 @@ import Styled from 'styled-components';
 const row = Styled.div
 
 export const Row = React.forwardRef((props, ref) => {
-    let { columns, data, onClick, onDoubleClick, selected, selectable, onChecked, editing, editingErrors, onConfirm, onCancelEdit, dataLength, index, appendRow, onCellDoubleClick, table } = props;
+    let { columns, data, onClick, onDoubleClick, selected, selectable, onChecked, editing, editingErrors, onConfirm, onCancelEdit, dataLength, index, appendRow, onCellDoubleClick, table, disabledChangeIndicator=false } = props;
     if (Array.isArray(columns)) {
         return (
-            <div ref={ref} className={`row-body ${data._isValid === false && "row-invalid"} ${data.phantom && "row-body-phantom"} ${selected && "selected"}`} onClick={onClick} onDoubleClick={onDoubleClick}>
+            <div ref={ref} className={`row-body ${data._isValid === false && "row-invalid"} ${!disabledChangeIndicator && data.phantom ? "row-body-phantom" : "" } ${selected && "selected"}`} onClick={onClick} onDoubleClick={onDoubleClick}>
 
                 {
-                    data.phantom && <div className={"arrow-corner"}></div>
+                    !disabledChangeIndicator && data.phantom ? <div className={"arrow-corner"}></div> : null
                 }
 
                 {

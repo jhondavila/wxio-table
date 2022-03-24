@@ -726,6 +726,7 @@ class Table extends React.Component {
 											ref={ref}
 											key={key}
 											index={index}
+											disabledChangeIndicator={this.props.disabledChangeIndicator}
 											appendRow={this.props.appendRow}
 											dataLength={this.state.myData.length}
 											editing={(this.state.editing && this.state.editing.record == row) && this.state.editing}
