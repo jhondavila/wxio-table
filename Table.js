@@ -45,7 +45,7 @@ class Table extends React.Component {
 	getColumns() {
 		let ColumsAll = [];
 
-		console.log(this);
+		//console.log(this);
 		let cols = this.props.columns ? this.props.columns : this.props.children;
 
 		cols.map((col) => {
