@@ -48,7 +48,10 @@ class Table extends React.Component {
 		//console.log(this);
 		let cols = this.props.columns ? this.props.columns : this.props.children;
 
-		cols.map((col) => {
+		cols.forEach((col) => {
+			if(!col){
+				return;
+			}
 			let addColl = col.props ? col.props : col;
 			ColumsAll.push(addColl);
 			if (!col.dataIndex) {
@@ -78,11 +81,15 @@ class Table extends React.Component {
 			newWidth = newWidth + 100;
 		}
 
-		cols.map((col) => {
+		cols.forEach((col) => {
+			if(!col){
+				return;
+			}
 			let width = col.props ? parseInt(col.props.width) : parseInt(col.width);
 			newWidth = newWidth + width;
 
 			let addColl = col.props ? col.props : col;
+			
 			tableColums.push(addColl);
 			if (!col.dataIndex) {
 				colCountId++;
