@@ -42,6 +42,33 @@
 	overflow-y: auto;
 }
 
+.mytable .tbody::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.mytable .tbody::-webkit-scrollbar:vertical {
+	width:10px;
+}
+
+.mytable .tbody::-webkit-scrollbar-button:increment,.contenedor::-webkit-scrollbar-button {
+	display: none;
+} 
+
+.mytable .tbody::-webkit-scrollbar:horizontal {
+	height: 10px;
+}
+
+.mytable .tbody::-webkit-scrollbar-thumb {
+	background-color: #acacac;
+    border-radius: 20px;
+    border: 2px solid #f1f2f3;
+}
+
+.mytable .tbody::-webkit-scrollbar-track {
+	border-radius: 10px;
+}
+
+
 .mytable .tbodycapa {
 	overflow-x: hidden;
 	overflow: hidden;
