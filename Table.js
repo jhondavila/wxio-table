@@ -48,11 +48,13 @@ class Table extends React.Component {
 		//console.log(this);
 		let cols = this.props.columns ? this.props.columns : this.props.children;
 
-		cols.forEach((col) => {
+		cols.forEach((col, x) => {
 			if(!col){
 				return;
 			}
+			
 			let addColl = col.props ? col.props : col;
+			
 			ColumsAll.push(addColl);
 			if (!col.dataIndex) {
 				colCountId++;
@@ -438,25 +440,25 @@ class Table extends React.Component {
 		//console.log(this.state.tblColumnsAll, "columns")
 		// console.log("sortDesc", this.columnMenu)
 	}
-	resizeColumnDrag(column, data, colClientRect) {
-		let clientRect = this.headerEl.getBoundingClientRect();
-		let headerXPos = data.x;
-		// console.log(clientRect)
-		this.setState({
-			resizerColPos: colClientRect.x - clientRect.x + headerXPos
-		});
-	}
-	resizeColumnStart(column, data, colClientRect) {
-		console.log(data)
-		// console.log({dom :this.headerEl})
-		let clientRect = this.headerEl.getBoundingClientRect();
-		let headerXPos = data.x;
-		// console.log(clientRect)
+	// resizeColumnDrag(column, data, colClientRect) {
+	// 	let clientRect = this.headerEl.getBoundingClientRect();
+	// 	let headerXPos = data.x;
+	// 	// console.log(clientRect)
+	// 	this.setState({
+	// 		resizerColPos: colClientRect.x - clientRect.x + headerXPos
+	// 	});
+	// }
+	// resizeColumnStart(column, data, colClientRect) {
+	// 	console.log(data)
+	// 	// console.log({dom :this.headerEl})
+	// 	let clientRect = this.headerEl.getBoundingClientRect();
+	// 	let headerXPos = data.x;
+	// 	// console.log(clientRect)
 
-		this.setState({
-			resizerColPos: colClientRect.x - clientRect.x + headerXPos
-		});
-	}
+	// 	this.setState({
+	// 		resizerColPos: colClientRect.x - clientRect.x + headerXPos
+	// 	});
+	// }
 
 	export(opts = {}) {
 		this.exporter.exportXLS(opts);
@@ -672,7 +674,7 @@ class Table extends React.Component {
 					</RowB>
 				</Menu>
 
-				<div className="mytable flex-fill" style={this.props.toolPage && this.props.store ? { height: "calc(100% - 45px)" } : null} >
+				<div className="mytable flex-fill" ref={c=>this.tableRef = c} style={this.props.toolPage && this.props.store ? { height: "calc(100% - 45px)" } : null} >
 					<div className="wx-table-resizer" style={{ left: this.state.resizerColPos }}></div>
 					<div className="theader" ref={c => { this.headerEl = c }}>
 						<div style={{ width: this.state.widthHeader + 'px' }}>
@@ -704,8 +706,9 @@ class Table extends React.Component {
 												order={this.state.order}
 												colMenu={this.showMenuColumn.bind(this)}
 												resizeColumnEnd={this.onResizeColumnEnd.bind(this)}
-												resizeColumnStart={this.resizeColumnStart.bind(this)}
-												resizeColumnDrag={this.resizeColumnDrag.bind(this)}
+												tableRef={this.tableRef }
+												// resizeColumnStart={this.resizeColumnStart.bind(this)}
+												// resizeColumnDrag={this.resizeColumnDrag.bind(this)}
 												config={c}
 											/>);
 										})

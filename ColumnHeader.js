@@ -74,121 +74,85 @@ const Text = Styled.div`
     flex: 1;
 `
 
+export class ColumnHeader extends React.Component {
 
-export const ColumnHeader = (props) => {
-    let { width = 200, text, align = "left", headerAlign , onOrder, dataIndex, order, colMenu, resizeColumnEnd, resizeColumnStart, resizeColumnDrag, config } = props
-    let colRef = useRef(null);
-    const nodeRef = React.useRef(null);
+	constructor(props){
+		super(props);
+		this.state = {
+			dragging : false,
+			activeResize : null
+		}
+	}
+	render() {
+		let { width = 200, text, align = "left", headerAlign, onOrder, dataIndex, order, colMenu, resizeColumnEnd, resizeColumnStart, resizeColumnDrag, config ,tableRef} = this.props;
+		let colAlign = headerAlign || align;
+		let boundClientRect =  this.colHeader ? this.colHeader.getBoundingClientRect():  {};
+		let tableClientRect = tableRef.getBoundingClientRect();
+		return (
+			<Col ancho={width} ref={c => this.colHeader = c}>
+				{this.state.dragging ? <div className='bar-start' style={{left : boundClientRect.left , top : boundClientRect.top, height : tableClientRect.height-10}}></div> : null}
+				<ColContent>
+					<Text align={colAlign} onClick={this.onClick.bind(this)}>
+						{text}
+						{
+							order && order.property == dataIndex ?
+								order.direction == "ASC" ?
+									<i className="far fa-long-arrow-alt-up sort-direction"></i>
+									:
+									<i className="far fa-long-arrow-alt-down sort-direction"></i>
 
+								: null
+						}
 
-    // // const mouseDown = (x) => {
-    //     window.addEventListener('mousemove', Resize, false);
-    //     window.addEventListener('mouseup', stopResize, false);
-    //     console.log(width);
-    // }
+					</Text>
 
-    // const Resize = (x) => {
-
-    //     //console.log(resizeCol.current.offsetLeft);
-    //     //console.log('mouseMove ->', x.clientX);
-    //     width = x.clientX - resizeCol.current.offsetLeft;
-    //     console.log(width);
-    // }
-
-    // const stopResize = (x) => {
-    //     window.removeEventListener('mousemove', Resize, false);
-    //     window.removeEventListener('mouseup', stopResize, false);
-    //     console.log(width);
-    // }
-
-    // const openMenu = (x) => {
-    //     window.x = x;
-    // }
-
-    const onClick = (l, i) => {
-        onOrder(dataIndex);
-
-    }
-    const onResizeStop = (e, data) => {
-        // console.log("onResizeStop",props)
-        // console.log("onResizeStop", e)
-        // console.log("onResizeStop", data)
-        // console.log(data.x, data.y, data.deltaX, data.deltaY, data.lastX, data.lastY)
-        if (resizeColumnEnd) {
-            resizeColumnEnd(config, data.x)
-        }
-    }
-    const onResizeStart = (e, data) => {
-        if (resizeColumnStart) {
-            let clientRect = colRef.current.getBoundingClientRect();
-            resizeColumnStart(config, data, clientRect)
-        }
-        // console.log("onResizeStart", e)
-        // console.log("onResizeStart", data)
-        // console.log(data.x, data.y, data.deltaX, data.deltaY, data.lastX, data.lastY)
-        // if (resizeColumnEnd) {
-        //     resizeColumnEnd(config, data.x)
-        // }
-        // console.log(e,data);
-    }
-
-    const onResizeDrag = (e, data) => {
-        if (resizeColumnDrag) {
-            let clientRect = colRef.current.getBoundingClientRect();
-            resizeColumnDrag(config, data, clientRect)
-        }
-        // console.log("onResizeDrag",props)
-        // x: number, y: number,
-        // deltaX: number, deltaY: number,
-        // lastX: number, lastY: number
-
-        // console.log("onResizeDrag", e)
-        // console.log("onResizeDrag", data)
-        // if (resizeColumnEnd) {
-        //     resizeColumnEnd(config, data.x)
-        // }
-        // console.log(data.x,data.y,data.deltaX,data.deltaY,data.lastX,data.lastY)
-    }
-
-    let colAlign = headerAlign || align;
-    return (
-
-
-        <Col ancho={width} ref={colRef}>
-            <ColContent>
-                <Text align={colAlign} onClick={onClick}>
-                    {text}
-                    {
-                        order && order.property == dataIndex ?
-                            order.direction == "ASC" ?
-                                <i className="far fa-long-arrow-alt-up sort-direction"></i>
-                                :
-                                <i className="far fa-long-arrow-alt-down sort-direction"></i>
-
-                            : null
-                    }
-
-                </Text>
-
-            </ColContent>
-            <Dropdown className="menu" onClick={(e) => { colMenu(e, props) }}><i className="fas fa-caret-down"></i></Dropdown>
+				</ColContent>
+				<Dropdown className="menu" onClick={(e) => { colMenu(e, this.props) }}><i className="fas fa-caret-down"></i></Dropdown>
 
 
 
-            <DraggableCore
-                // {...draggableOpts}
-                // key={`resizableHandle-${handleAxis}`}
-                nodeRef={nodeRef}
-                onStop={onResizeStop}
-                onStart={onResizeStart}
-                onDrag={onResizeDrag}
-            >
+				<DraggableCore
+					nodeRef={this.draggable}
+					onStop={this.onResizeStop.bind(this)}
+					onStart={this.onResizeStart.bind(this)}
+					onDrag={this.onResizeDrag.bind(this)}
+				>
+					<Resizable
+						ref={this.draggable}
+					/>
+				</DraggableCore>
+				{this.state.dragging ? <div className='bar-end' style={{left : this.state.activeResize || boundClientRect.right, top : boundClientRect.top , height : tableClientRect.height-10}}></div> : null}
+			</Col>
+		);
+	}
+	onResizeStop(e, data){
+		this.setState({
+			dragging : false
+		})
+		let {resizeColumnEnd , config} = this.props;
+		resizeColumnEnd(config,data.x);
+	}
+	onResizeDrag(e,data){
+		let headerXPos = data.x;
+		let clientRect = this.colHeader.getBoundingClientRect();
+		this.setState({
+			activeResize : clientRect.x + headerXPos
+		});
+	}
+	onResizeStart(){
+		this.setState({
+			dragging : true,
+			activeResize : null
+		})
+	}
 
-                <Resizable 
-                    ref={nodeRef}
-                />
-            </DraggableCore>
+	openMenu(x) {
+		window.x = x;
+	}
 
-        </Col>
-    );
+	onClick(l, i) {
+		let {dataIndex,onOrder} = this.props;
+		onOrder(dataIndex);
+
+	}
 }

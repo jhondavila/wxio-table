@@ -785,3 +785,19 @@ $gris1: rgba(0, 0, 0, 0.4);
 		}
 	}
 }
+
+
+.bar-start{
+	position: fixed;
+	height: 200px;
+	width: 1px;
+	background-color: #5b5b5b;
+}
+
+
+.bar-end{
+	position: fixed;
+    height: 200px;
+    width: 1px;
+    background-color: #5b5b5b;
+}
