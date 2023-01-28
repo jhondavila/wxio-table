@@ -425,13 +425,16 @@ class Table extends React.Component {
 	async loadColumns() {
 		let column = this.columnMenu;
 
-		let columns = await ViewColumns({columns: this.state.tblColumnsAll, reportList: this.props.userInfo});
+		let columns = await ViewColumns({columns: this.state.tblColumnsAll, onSaveView: this.props.onSaveView});
 
 		if (columns){
 			this.setState({
 				tblColumnsAll: columns
 			}, ()=>{
 				this.crearColumnas();
+				if(this.props.onSaveView) {
+					this.props.onSaveView(columns)
+				}
 				//this.forceUpdate()
 			});
 		}

@@ -2,7 +2,11 @@
 import React from 'react';
 import createModalCt from '../modal/createModal';
 import { msgAlert } from '..';
-import { Container, Row, Col, Image, Modal, Button, Form } from 'react-bootstrap';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Modal, Button } from 'react-bootstrap';
+import { ListDrag, ListItemDrag } from '../form/ListDrag';
+
 
 class ModalViewColumns extends React.Component {
 
@@ -28,9 +32,6 @@ class ModalViewColumns extends React.Component {
       colsActive: colsActive,
       colsInactive: colsInactive
     });
-
-
-
   }
   componentWillUnmount() {
     // clearInterval(this.timerRefresh);
@@ -53,6 +54,20 @@ class ModalViewColumns extends React.Component {
     this.setState({
       selectInactive: col
     });
+  }
+
+  moveField(field, index, hidden) {
+    let oldIndex = hidden ? this.state.colsInactive.indexOf(field) : this.state.colsActive.indexOf(field);
+
+    if (oldIndex > -1) {
+      const targetRow = hidden ? this.state.colsInactive.splice(oldIndex, 1)[0] : this.state.colsActive.splice(oldIndex, 1)[0];
+
+      hidden ? this.state.colsInactive.splice(index, 0, targetRow) : this.state.colsActive.splice(index, 0, targetRow);
+
+      this.forceUpdate();
+
+    }
+
   }
 
   onMoveLeft() {
@@ -115,36 +130,6 @@ class ModalViewColumns extends React.Component {
     }
   }
 
-  confirm() {
-    /*
-    */
-    let allColumns = this.state.colsActive.concat(this.state.colsInactive);
-    this.setState({
-      show: false
-    });
-
-    this.props.resolve(allColumns);
-
-  }
-
-  save(){
-    
-    let allColumns = this.state.colsActive.concat(this.state.colsInactive);
-    this.setState({
-      show: false
-    });
-
-    this.props.resolve(allColumns);
-  }
-
-  cancel() {
-    this.setState({
-      show: false
-    });
-    this.props.resolve(false);
-  }
-
-
   moveUp() {
 
     if (this.state.selectActive) {
@@ -171,10 +156,11 @@ class ModalViewColumns extends React.Component {
     }
   }
   moveDown() {
+
     if (this.state.selectActive) {
 
       let model = this.state.selectActive;
-      // debugger
+
       let cloneArray = this.state.colsActive.slice(0);
       let oldIndex = cloneArray.indexOf(model);
       let newIndex = oldIndex + 1;
@@ -183,7 +169,7 @@ class ModalViewColumns extends React.Component {
 
     } else if (this.state.selectInactive) {
       let model = this.state.selectInactive;
-      // debugger
+
       let cloneArray = this.state.colsInactive.slice(0);
       let oldIndex = cloneArray.indexOf(model);
       let newIndex = oldIndex + 1;
@@ -204,61 +190,166 @@ class ModalViewColumns extends React.Component {
       const targetRow = data.splice(oldIndex, 1)[0];
       data.splice(index, 0, targetRow);
       this.forceUpdate();
-      // this.each(fn);
     }
   }
+
+  onAddChooser(params) {
+
+    let { from, target, item } = params;
+    let index = item.index || 0;
+
+    if (target == "activecolumn") {
+      let NewColsInactive = this.state.colsInactive.filter(i => i != item.field) || [];
+      let CellActive = item.field;
+
+      CellActive.hidden = true
+      let NewColsActive = this.state.colsActive;
+
+      NewColsActive.splice(index, 0, CellActive);
+
+      this.setState({
+        colsActive: NewColsActive,
+        colsInactive: NewColsInactive,
+      }, () => {
+        this.forceUpdate();
+      });
+    }
+    else {
+
+      let NewColsActive = this.state.colsActive.filter(i => i != item.field) || [],
+        CellInactive = item.field;
+
+      CellInactive.hidden = true
+
+      let NewColsInactive = this.state.colsInactive;
+
+      NewColsInactive.splice(index, 0, CellInactive);
+
+      this.setState({
+        colsActive: NewColsActive,
+        colsInactive: NewColsInactive,
+      }, () => {
+        this.forceUpdate();
+      });
+
+    };
+
+  }
+
+
+  save() {
+    
+    let allColumns = this.state.colsActive.concat(this.state.colsInactive);
+    this.setState({
+      show: false
+    });
+    
+    this.props.resolve(allColumns);
+  }
+  
+  confirm() {
+
+    let allColumns = this.state.colsActive.concat(this.state.colsInactive);
+    this.setState({
+      show: false
+    });
+
+    this.props.resolve(allColumns);
+
+  }
+
+  cancel() {
+    this.setState({
+      show: false
+    });
+    this.props.resolve(false);
+  }
+
 
   render() {
     let src = this.state.errorSrc && this.props.thumbailSrc ? this.props.thumbailSrc : this.props.src;
     return (
-      <Modal
-        show={this.state.show}
-        onHide={this.cancel.bind(this)}
-        animation={true}
-        centered={true}
-        backdrop="static"
-        keyboard={true}
-        dialogClassName={"search-modal-dialog"}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Columnas</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className='wx-table-viewcolumns'>
-            <div className='list'>
-              {
-                this.state.colsActive ? this.state.colsActive.map((col) => {
-                  let select = col == this.state.selectActive ? "selected" : "";
-                  return (<div key={col.id} className={`item-col ' ${select}`} onClick={this.onSelectActive.bind(this, col)}>{col.text}</div>)
-                }) : null
-              }
-            </div>
-            <div className='content-menu'>
-              <div className='menu'>
-                <Button variant="outline-primary" onClick={this.onMoveLeft.bind(this)}><i className="far fa-arrow-alt-circle-left"></i></Button>
-                <Button variant="outline-primary" onClick={this.onMoveRight.bind(this)}><i className="far fa-arrow-alt-circle-right"></i></Button>
-                <Button variant="outline-primary" onClick={this.moveUp.bind(this)}><i className="far fa-arrow-alt-circle-up"></i></Button>
-                <Button variant="outline-primary" onClick={this.moveDown.bind(this)}><i className="far fa-arrow-alt-circle-down"></i></Button>
+      <DndProvider backend={HTML5Backend}>
+        <Modal
+          show={this.state.show}
+          onHide={this.cancel.bind(this)}
+          animation={true}
+          centered={true}
+          backdrop="static"
+          keyboard={true}
+          dialogClassName={"search-modal-dialog"}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Columnas</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className='wx-table-viewcolumns'>
+              <div className="list">
+                <strong> Columnas visibles </strong>
+                <ListDrag name="activecolumn" group={"activecolumn"}>
+
+                  {
+                    this.state.colsActive ? this.state.colsActive.map((col, colIdx) => {
+                      // console.log(col,colIdx)
+                      let select = col == this.state.selectActive ? "selected" : "";
+                      return (<ListItemDrag
+                        data={{ index: colIdx, from: 'activecolumn' }}
+                        field={col}
+                        key={`${col.id}-active`}
+                        className={`item-col ' ${select}`}
+                        onClick={this.onSelectActive.bind(this, col)}
+                        text={col.text}
+                        group={'activecolumn'}
+                        moveField={this.moveField.bind(this)}
+                        onAddChooser={this.onAddChooser.bind(this)}
+                      // from={''}
+                      />)
+                    }) : null
+                  }
+                </ListDrag>
+              </div>
+              <div className='content-menu'>
+                <div className='menu'>
+                  <Button variant="outline-primary" onClick={this.onMoveLeft.bind(this)}><i className="far fa-arrow-alt-circle-left"></i></Button>
+                  <Button variant="outline-primary" onClick={this.onMoveRight.bind(this)}><i className="far fa-arrow-alt-circle-right"></i></Button>
+                  <Button variant="outline-primary" onClick={this.moveUp.bind(this)}><i className="far fa-arrow-alt-circle-up"></i></Button>
+                  <Button variant="outline-primary" onClick={this.moveDown.bind(this)}><i className="far fa-arrow-alt-circle-down"></i></Button>
+                </div>
+              </div>
+              <div className="list">
+                <strong>Pool de columnas</strong>
+                <ListDrag name="inactivecolumn" group={"inactivecolumn"}>
+                  {
+                    this.state.colsInactive ? this.state.colsInactive.map((col, colIdx) => {
+                      let select = col == this.state.selectActive ? "selected" : "";
+                      return (
+                        <ListItemDrag
+                          data={{ index: colIdx, from: 'inactivecolumn' }}
+                          field={col}
+                          key={`${col.id}-inactive`}
+                          className={`item-col ' ${select}`}
+                          onClick={this.onSelectActive.bind(this, col)}
+                          text={col.text}
+                          group={'inactivecolumn'}
+                          moveField={this.moveField.bind(this)}
+                          onAddChooser={this.onAddChooser.bind(this)}
+
+                        />)
+                    }) : null
+                  }
+                </ListDrag>
               </div>
             </div>
-            <div className='list'>
-              {
-                this.state.colsActive ? this.state.colsInactive.map((col) => {
-                  let select = col == this.state.selectInactive ? "selected" : "";
-                  return (<div key={col.id} className={`item-col ' ${select}`} onClick={this.onSelectInactive.bind(this, col)}>{col.text}</div>)
-                }) : null
-              }
-            </div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          {
-            this.props.reportList ? ( <Button variant="secondary" onClick={this.save.bind(this)}><i className="far fa-save"></i></Button>) : null
-          }
-          <Button variant="secondary" onClick={this.cancel.bind(this)}>Cancelar</Button>
-          <Button variant="primary" onClick={this.confirm.bind(this)}>Aceptar</Button>
-        </Modal.Footer>
-      </Modal>
+          </Modal.Body>
+          <Modal.Footer>
+            {
+              this.props.onSaveView ? (<Button variant="secondary" onClick={this.save.bind(this)}><i className="far fa-save"></i></Button>) : null
+            }
+            <Button variant="secondary" onClick={this.cancel.bind(this)}>Cancelar</Button>
+            <Button variant="primary" onClick={this.confirm.bind(this)}>Aceptar</Button>
+          </Modal.Footer>
+        </Modal>
+      </DndProvider>
     )
   }
 
