@@ -5,7 +5,7 @@ import Styled from 'styled-components';
 const row = Styled.div
 
 export const Row = React.forwardRef((props, ref) => {
-	let { columns, data, onClick, onDoubleClick, selected, selectable, onChecked, editing, editingErrors, onConfirm, onCancelEdit, dataLength, index, appendRow, onCellDoubleClick, table, disabledChangeIndicator = false } = props;
+	let { columns, data, onClick, rowKey,onDoubleClick, selected, selectable, onChecked, editing, editingErrors, onConfirm, onCancelEdit, dataLength, index, appendRow, onCellDoubleClick, table, disabledChangeIndicator = false } = props;
 	if (Array.isArray(columns)) {
 		return (
 			<div ref={ref} className={`row-body ${data._isValid === false && "row-invalid"} ${!disabledChangeIndicator && data.phantom ? "row-body-phantom" : ""} ${selected && "selected"}`} onClick={onClick} onDoubleClick={onDoubleClick}>
@@ -23,7 +23,7 @@ export const Row = React.forwardRef((props, ref) => {
 					columns.map((col, colIndex) => {
 						let key = col.id;
 						return (<Column
-							key={key}
+							key={`${rowKey}${key}`}
 							type={col.type}
 							format={col.format}
 							value={data.get ? data.get(col.dataIndex) || "" : data[col.dataIndex]}

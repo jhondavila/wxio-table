@@ -738,6 +738,7 @@ class Table extends React.Component {
 										<Row
 											ref={ref}
 											key={key}
+											rowKey={key}
 											index={index}
 											disabledChangeIndicator={this.props.disabledChangeIndicator}
 											appendRow={this.props.appendRow}
